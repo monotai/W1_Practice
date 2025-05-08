@@ -5,32 +5,25 @@ import { Duration } from "./Duration.js";
 export class RaceResult {
 
        // TODO
-       participant_id;
-       sport_type;
-       duration;
-       list_race_results = [];
-
-       constructor(participant_id, sport_type, duration) {
+       constructor(participant_id, sport, time) {
+              if (typeof participant_id !== 'string' || typeof sport !== 'string') {
+                     throw new Error('Participant ID and sport type must be strings.');
+              }
+              if (!(time instanceof Duration)) {
+                     throw new Error('Time must be an instance of Duration.');
+              }
               this.participant_id = participant_id;
-              this.sport_type = sport_type;
-              this.duratio = duration;
+              this.sport = sport;
+              this.time = time;
        }
 
-       push(other) {
-              if (!(other instanceof RaceResult)) {
-                     throw new Error('Argument must be an instance of RaceResult.');
+       static addRaceResult(participant_id, sport_type, duration) {
+              if (typeof participant_id !== 'string' || typeof sport_type !== 'string') {
+                     throw new Error('Participant ID and sport type must be strings.');
               }
-              const newDuration = this.duration.plus(other.duration);
-              return new RaceResult(this.participant_id, this.sport_type, newDuration);
-       }
-       minus(other) {
-              if (!(other instanceof RaceResult)) {
-                     throw new Error('Argument must be an instance of RaceResult.');
+              if (!(duration instanceof Duration)) {
+                     throw new Error('Duration must be an instance of Duration.');
               }
-              const newDuration = this.duration.minus(other.duration);
-              return new RaceResult(this.participant_id, this.sport_type, newDuration);
-       }
-       toString() {
-              return `${this.participant_id} ${this.sport_type} ${this.duration.toString()}`;
+              const newRaceResult = new RaceResult(participant_id, sport_type, JSON.parse(JSON.stringify(duration)));
        }
   }

@@ -2,6 +2,8 @@
 import { Duration } from "../model/Duration.js";
 import { RaceResult } from "../model/RaceResult.js";
 
+import fs from 'fs';
+
 /**
  * This class handle the race results management system.
  */
@@ -23,6 +25,10 @@ export class RaceResultsService {
    */
   addRaceResult(result) {
     // TODO
+    if (!(result instanceof RaceResult)) {
+      throw new Error('Result must be an instance of RaceResult.');
+    }
+    this._raceResults.push(JSON.parse(JSON.stringify(result)));
   }
 
   /**
@@ -31,6 +37,17 @@ export class RaceResultsService {
    */
   saveToFile(filePath) {
     // TODO
+    if (typeof filePath !== 'string') {
+      throw new Error('File path must be a string.');
+    }
+    const data = JSON.stringify(this._raceResults, null, 2);
+    fs.writeFileSync(filePath, data, 'utf8', (err) => {
+      if (err) {
+        console.error('Error writing to file', err);
+      } else {
+        console.log('Data saved successfully!');
+      }
+    });
   }
 
   /**
@@ -40,6 +57,14 @@ export class RaceResultsService {
    */
   loadFromFile(filePath) {
     // TODO
+    if (typeof filePath !== 'string') {
+      throw new Error('File path must be a string.');
+    }
+    if (!fs.existsSync(filePath)) {
+      console.error('File does not exist:', filePath);
+      return false;
+    }
+    this._raceResults = fs.readFileSync(filePath, 'utf8');
   }
 
   /**
@@ -50,6 +75,11 @@ export class RaceResultsService {
    */
   getTimeForParticipant(participantId, sport) {
        // TODO
+    if (typeof participantId !== 'string' || typeof sport !== 'string') {
+      throw new Error('Participant ID and sport type must be strings.');
+    }
+    const result = this._raceResults.find(item => item.result.participant_id === participantId && item.result.sport === sport);
+    return result ? result.result.time : null;
   }
 
   /**
@@ -59,5 +89,18 @@ export class RaceResultsService {
    */
   getTotalTimeForParticipant(participantId) {
         // TODO
+    if (typeof participantId !== 'string') {
+      throw new Error('Participant ID must be a string.');
+    }
+    var totalDuration = 0;
+    const results = this._raceResults.forEach(item => {
+      if (item.participant_id == participantId){
+        totalDuration += item.time._totalSeconds;
+      }
+    });
+    if (totalDuration === 0) {
+      return null;
+    }
+    return new Duration(totalDuration);
   }
 }

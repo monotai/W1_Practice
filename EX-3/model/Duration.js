@@ -8,7 +8,7 @@
 
 //  TODO - You need to export your class to use it
 
-export default class Duration {
+export class Duration {
     /**
      * Total duration in seconds.
      * @type {number}
